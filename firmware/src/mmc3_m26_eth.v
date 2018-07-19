@@ -316,9 +316,6 @@ localparam TLU_HIGHADDR = 32'h8300-1;
     
 localparam PULSER_VETO_BASEADDR = 32'h8300;
 localparam PULSER_VETO_HIGHADDR = 32'h8400-1;
-
-localparam TDC_BASEADDR = 32'h8700;
-localparam TDC_HIGHADDR = 32'h8800-1;
     
 localparam M26_RX_BASEADDR = 32'ha000;
 localparam M26_RX_HIGHADDR = 32'ha00f-1;
