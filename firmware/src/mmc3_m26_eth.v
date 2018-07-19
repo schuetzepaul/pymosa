@@ -313,10 +313,13 @@ tcp_to_bus itcp_to_bus(
 
 localparam TLU_BASEADDR = 32'h8200;
 localparam TLU_HIGHADDR = 32'h8300-1;
+    
+localparam PULSER_VETO_BASEADDR = 32'h8300;
+localparam PULSER_VETO_HIGHADDR = 32'h8400-1;
 
 localparam TDC_BASEADDR = 32'h8700;
 localparam TDC_HIGHADDR = 32'h8800-1;
-
+    
 localparam M26_RX_BASEADDR = 32'ha000;
 localparam M26_RX_HIGHADDR = 32'ha00f-1;
 
@@ -499,7 +502,7 @@ tlu_controller #(
     .TLU_ENABLED(),
 
     .EXT_TRIGGER_ENABLE(1'b0),
-    .TRIGGER_ACKNOWLEDGE(TRIGGER_ACCEPTED_FLAG),
+    .TRIGGER_ACKNOWLEDGE(TRIGGER_ACKNOWLEDGE_FLAG),
     .TRIGGER_ACCEPTED_FLAG(TRIGGER_ACCEPTED_FLAG),
 
     .TLU_TRIGGER(RJ45_TRIGGER),
@@ -508,6 +511,36 @@ tlu_controller #(
     .TLU_CLOCK(RJ45_CLK_LEMO_TX0),
 
     .TIMESTAMP(TIMESTAMP)
+);
+
+// ----- Pulser for TLU veto----- //
+wire VETO_TLU_PULSE;
+wire EXT_START_PULSE_VETO;
+reg VETO_TLU_PULSE_FF;
+
+always @ (posedge CLK40)
+begin
+    VETO_TLU_PULSE_FF <= VETO_TLU_PULSE;
+end
+
+// set acknowledge not until veto is high
+assign TRIGGER_ACKNOWLEDGE_FLAG = ~VETO_TLU_PULSE & VETO_TLU_PULSE_FF;
+
+pulse_gen #(
+    .BASEADDR(PULSER_VETO_BASEADDR),
+    .HIGHADDR(PULSER_VETO_HIGHADDR),
+    .ABUSWIDTH(32)
+) i_pulse_gen_veto (
+    .BUS_CLK(BUS_CLK),
+    .BUS_RST(BUS_RST),
+    .BUS_ADD(BUS_ADD),
+    .BUS_DATA(BUS_DATA),
+    .BUS_RD(BUS_RD),
+    .BUS_WR(BUS_WR),
+
+    .PULSE_CLK(CLK40),
+    .EXT_START(TRIGGER_ACCEPTED_FLAG),
+    .PULSE(VETO_TLU_PULSE)
 );
 
 reg [31:0] timestamp_gray;
