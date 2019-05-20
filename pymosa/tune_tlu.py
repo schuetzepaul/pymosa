@@ -159,7 +159,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     with open('./m26_configuration.yaml', 'r') as f:
-        config = yaml.load(f)
+        config = yaml.load(f,Loader=yaml.FullLoader)
 
     if args.trigger_data_delay_range is not None:
         config["trigger_data_delay_range"] = range(args.trigger_data_delay_range)

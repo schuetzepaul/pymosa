@@ -164,8 +164,9 @@ def main():
 
     # Open Mimosa26 std. configuration
     pymosa_path = os.path.dirname(pymosa.__file__)
-    with open(os.path.join(pymosa_path, 'm26_configuration.yaml'), 'r') as f:
-        init_conf = yaml.load(f)
+    #with open(os.path.join(pymosa_path, 'm26_configuration.yaml'), 'r') as f:
+    with open('m26_configuration.yaml', 'r') as f:
+        init_conf = yaml.load(f,Loader=yaml.FullLoader)
 
     # Create telescope object and load hardware configuration
     telescope = EudaqScan(conf=None)  # None: use default hardware configuration, m26.yaml
